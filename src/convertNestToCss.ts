@@ -56,6 +56,21 @@ function isRootParent(parentSelectors: string[]) {
   return parentSelectors.length === 1 && parentSelectors[0] === ''
 }
 
+function makeIndent(level: number) {
+  return '  '.repeat(Math.max(0, level))
+}
+
+function formatDecls(decls: string, indentLevel: number) {
+  const indent = makeIndent(indentLevel)
+  return decls
+    .split('\n')
+    .map((line) => {
+      const t = line.trim()
+      return t ? `${indent}${t}` : ''
+    })
+    .join('\n')
+}
+
 function expandSelectors(parentSelectors: string[], childHeader: string): string[] {
   const childParts = splitTopLevelCommas(childHeader)
   if (parentSelectors.length === 0) return childParts
@@ -191,10 +206,12 @@ function parseNestingCss(input: string): CssNode {
   return root
 }
 
-function emitCss(node: CssNode, parentSelectors: string[]): string {
+function emitCss(node: CssNode, parentSelectors: string[], indentLevel: number): string {
+  const indent = makeIndent(indentLevel)
+
   if (node.kind === 'root') {
     let out = ''
-    for (const child of node.children) out += emitCss(child, [''])
+    for (const child of node.children) out += emitCss(child, [''], 0)
     return out.trim()
   }
 
@@ -204,11 +221,11 @@ function emitCss(node: CssNode, parentSelectors: string[]): string {
 
     let out = ''
     if (decls) {
-      out += `${fullSelectors.join(', ')} {\n${decls}\n}\n`
+      out += `${indent}${fullSelectors.join(', ')} {\n${formatDecls(decls, indentLevel + 1)}\n${indent}}\n`
     }
 
     for (const child of node.children) {
-      out += emitCss(child, fullSelectors)
+      out += emitCss(child, fullSelectors, indentLevel)
     }
 
     return out
@@ -221,23 +238,24 @@ function emitCss(node: CssNode, parentSelectors: string[]): string {
 
   if (decls) {
     if (wrapParent) {
-      inner += `${parentSelectors.join(', ')} {\n${decls}\n}\n`
+      const innerIndent = makeIndent(indentLevel + 1)
+      inner += `${innerIndent}${parentSelectors.join(', ')} {\n${formatDecls(decls, indentLevel + 2)}\n${innerIndent}}\n`
     } else {
-      inner += `${decls}\n`
+      inner += `${formatDecls(decls, indentLevel + 1)}\n`
     }
   }
 
   for (const child of node.children) {
-    inner += emitCss(child, parentSelectors)
+    inner += emitCss(child, parentSelectors, indentLevel + 1)
   }
 
   if (!inner.trim()) return ''
-  return `${node.header} {\n${inner.trim()}\n}\n`
+  return `${indent}${node.header} {\n${inner.trimEnd()}\n${indent}}\n`
 }
 
 export function convertNestToCss(input: string): string {
   const root = parseNestingCss(input)
-  const out = emitCss(root, [''])
+  const out = emitCss(root, [''], 0)
   return out.trim() + '\n'
 }
 

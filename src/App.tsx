@@ -1,5 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { convertNestToCss } from './convertNestToCss'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-css'
+
+const CSS_LANGUAGE = 'css' as const
 
 const seed = `.parent {
   color: red;
@@ -28,6 +32,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
 
   const convert = useMemo(() => convertNestToCss, [])
+  const inputTextAreaRef = useRef<HTMLTextAreaElement | null>(null)
+  const inputHighlightRef = useRef<HTMLPreElement | null>(null)
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -41,6 +47,19 @@ export default function App() {
     }, 200)
     return () => window.clearTimeout(t)
   }, [input, convert])
+
+  const displayOutput = error
+    ? `// 轉換失敗：\n// ${error}\n`
+    : output
+
+  const highlightedOutput = useMemo(() => {
+    // Prism expects a raw string; it returns HTML with <span class="token ...">...
+    return Prism.highlight(displayOutput, Prism.languages[CSS_LANGUAGE], CSS_LANGUAGE)
+  }, [displayOutput])
+
+  const highlightedInput = useMemo(() => {
+    return Prism.highlight(input || '', Prism.languages[CSS_LANGUAGE], CSS_LANGUAGE)
+  }, [input])
 
   return (
     <div className="app">
@@ -58,11 +77,32 @@ export default function App() {
             <strong>Nesting CSS</strong>
             <span>input</span>
           </div>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            spellCheck={false}
-          />
+          <div className="codeEditor">
+            <pre
+              className="highlightLayer"
+              ref={inputHighlightRef}
+              aria-hidden="true"
+            >
+              <code
+                className="language-css"
+                dangerouslySetInnerHTML={{ __html: highlightedInput }}
+              />
+            </pre>
+            <textarea
+              ref={inputTextAreaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onScroll={(e) => {
+                const t = e.currentTarget
+                if (!inputHighlightRef.current) return
+                inputHighlightRef.current.scrollTop = t.scrollTop
+                inputHighlightRef.current.scrollLeft = t.scrollLeft
+              }}
+              spellCheck={false}
+              className="inputLayer"
+              wrap="off"
+            />
+          </div>
         </section>
 
         <section className="panel">
@@ -70,13 +110,17 @@ export default function App() {
             <strong>Plain CSS</strong>
             <span>output</span>
           </div>
-          <textarea
-            value={error ? `// 轉換失敗：\n// ${error}\n` : output}
-            readOnly
-            spellCheck={false}
-            placeholder="等待轉換…"
-            className="placeholder"
-          />
+          <pre className="codeArea">
+            {displayOutput ? (
+              <code
+                className="language-css"
+                // Prism generates safe escaped HTML.
+                dangerouslySetInnerHTML={{ __html: highlightedOutput }}
+              />
+            ) : (
+              <span className="codePlaceholder">等待轉換…</span>
+            )}
+          </pre>
         </section>
       </div>
     </div>
