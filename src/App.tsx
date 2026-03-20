@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { convertNestToCss } from './convertNestToCss'
 import Prism from 'prismjs'
 import 'prismjs/components/prism-css'
+import { LOCALE_STORAGE_KEY, getInitialLocale, t, type Locale } from './i18n'
 
 const CSS_LANGUAGE = 'css' as const
 
@@ -31,6 +32,8 @@ export default function App() {
   const [output, setOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
 
+  const [locale, setLocale] = useState<Locale>(() => getInitialLocale())
+
   type Theme = 'light' | 'dark'
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'light'
@@ -43,6 +46,11 @@ export default function App() {
     document.documentElement.classList.toggle('theme-dark', theme === 'dark')
     window.localStorage.setItem('theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+  }, [locale])
 
   const convert = useMemo(() => convertNestToCss, [])
   const inputTextAreaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -62,7 +70,7 @@ export default function App() {
   }, [input, convert])
 
   const displayOutput = error
-    ? `// 轉換失敗：\n// ${error}\n`
+    ? `// ${t(locale, 'app.error.outputMain')}\n// ${error}\n`
     : output
 
   const highlightedOutput = useMemo(() => {
@@ -78,18 +86,31 @@ export default function App() {
     <div className="app">
       <div className="header">
         <div>
-          <div className="title">CSS Nesting 轉換器</div>
-          <div className="hint">左邊貼 nesting CSS，右邊自動顯示轉換後結果（盡量涵蓋常見 nesting 寫法）</div>
+          <div className="title">{t(locale, 'app.title')}</div>
+          <div className="hint">{t(locale, 'app.header.hint')}</div>
         </div>
         <div className="rightBar">
-          <div className="hint">{error ? `轉換錯誤：${error}` : '即時轉換中…'}</div>
+          <div className="hint">
+            {error
+              ? `${t(locale, 'app.status.conversionErrorPrefix')}${error}`
+              : t(locale, 'app.status.converting')}
+          </div>
+          <select
+            className="langSelect"
+            value={locale}
+            onChange={(e) => setLocale(e.target.value as Locale)}
+            aria-label={t(locale, 'app.language.label')}
+          >
+            <option value="zh-TW">{t('zh-TW', 'lang.zh-TW')}</option>
+            <option value="en">{t('en', 'lang.en')}</option>
+          </select>
           <button
             type="button"
             className="themeToggle"
             onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-            aria-label="切換主題"
+            aria-label={t(locale, 'app.theme.toggleAriaLabel')}
           >
-            {theme === 'dark' ? '亮色' : '暗色'}
+            {theme === 'dark' ? t(locale, 'theme.switchToLightLabel') : t(locale, 'theme.switchToDarkLabel')}
           </button>
         </div>
       </div>
@@ -97,8 +118,8 @@ export default function App() {
       <div className="grid">
         <section className="panel">
           <div className="panelHeader">
-            <strong>Nesting CSS</strong>
-            <span>input</span>
+            <strong>{t(locale, 'panel.nesting.header')}</strong>
+            <span>{t(locale, 'panel.nesting.subheader')}</span>
           </div>
           <div className="codeEditor">
             <pre
@@ -130,8 +151,8 @@ export default function App() {
 
         <section className="panel">
           <div className="panelHeader">
-            <strong>Plain CSS</strong>
-            <span>output</span>
+            <strong>{t(locale, 'panel.output.header')}</strong>
+            <span>{t(locale, 'panel.output.subheader')}</span>
           </div>
           <pre className="codeArea">
             {displayOutput ? (
@@ -141,7 +162,7 @@ export default function App() {
                 dangerouslySetInnerHTML={{ __html: highlightedOutput }}
               />
             ) : (
-              <span className="codePlaceholder">等待轉換…</span>
+              <span className="codePlaceholder">{t(locale, 'app.codePlaceholder')}</span>
             )}
           </pre>
         </section>
