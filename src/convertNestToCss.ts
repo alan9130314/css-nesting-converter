@@ -166,12 +166,8 @@ function parseNestingCss(input: string): CssNode {
         if (parent.kind !== 'root') parent.declarations.push(declSegment)
       }
 
-      // If header is empty, it's malformed; ignore creating a node.
       if (!header) {
-        depth++
-        segmentStartByDepth[depth] = i + 1
-        headerStartByDepth[depth] = i + 1
-        continue
+        throw new Error('Malformed block: missing selector / @rule before "{"')
       }
 
       const kind: NodeKind = header.startsWith('@') ? 'atrule' : 'rule'
@@ -186,11 +182,19 @@ function parseNestingCss(input: string): CssNode {
     }
 
     if (ch === '}') {
+      if (depth <= 0) {
+        throw new Error('Unexpected "}" (unmatched closing brace)')
+      }
+
       const node = stack[depth]
+      if (!node) {
+        throw new Error('Unexpected "}" (parse stack underflow)')
+      }
+
       const declSegment = css.slice(segmentStartByDepth[depth], i).trim()
       if (declSegment) node.declarations.push(declSegment)
       stack.pop()
-      depth = Math.max(0, depth - 1)
+      depth = depth - 1
       segmentStartByDepth[depth] = i + 1
       headerStartByDepth[depth] = i + 1
       continue
@@ -201,6 +205,10 @@ function parseNestingCss(input: string): CssNode {
       headerStartByDepth[depth] = i + 1
       continue
     }
+  }
+
+  if (depth !== 0) {
+    throw new Error('Unclosed "{" (missing closing brace)')
   }
 
   return root
@@ -254,8 +262,11 @@ function emitCss(node: CssNode, parentSelectors: string[], indentLevel: number):
 }
 
 export function convertNestToCss(input: string): string {
+  if (!input.trim()) return ''
+
   const root = parseNestingCss(input)
   const out = emitCss(root, [''], 0)
-  return out.trim() + '\n'
+  const trimmed = out.trim()
+  return trimmed ? trimmed + '\n' : ''
 }
 

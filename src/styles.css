@@ -8,6 +8,11 @@
   --glow1: rgba(99, 102, 241, 0.18);
   --glow2: rgba(16, 185, 129, 0.14);
 
+  /* Layout */
+  --panelHeaderH: 40px;
+  --panelFooterH: 40px;
+  --codeAreaH: 70vh;
+
   --panelBg: linear-gradient(180deg, rgba(15, 23, 42, 0.04), transparent);
   --panelHeaderBg: rgba(15, 23, 42, 0.02);
 
@@ -40,10 +45,13 @@ body {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
-  background: radial-gradient(1200px 700px at 20% 10%, var(--glow1), transparent),
-    radial-gradient(900px 600px at 80% 0%, var(--glow2), transparent),
+  /* Use responsive percentages so the glow doesn't look weird on narrow screens. */
+  background: radial-gradient(60% 45% at 20% 10%, var(--glow1), transparent),
+    radial-gradient(50% 40% at 80% 0%, var(--glow2), transparent),
     var(--bg);
+  background-repeat: no-repeat;
   color: var(--text);
+  min-height: 100vh;
 }
 
 .app {
@@ -93,18 +101,35 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  height: var(--panelHeaderH);
+  padding: 0 12px;
+  box-sizing: border-box;
   border-bottom: 1px solid var(--border);
   background: var(--panelHeaderBg);
 }
 
 .panelHeader strong {
   font-size: 13px;
+  line-height: 1;
 }
 
 .panelHeader span {
   font-size: 12px;
   color: var(--muted);
+  line-height: 1;
+}
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 12px;
+  border-top: 1px solid var(--border);
+  background: var(--panelHeaderBg);
+  height: var(--panelFooterH);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .themeToggle {
@@ -143,11 +168,39 @@ body {
   color: var(--muted);
   border-radius: 8px;
   /* keep panel header height consistent with the left panel */
-  padding: 2px 10px;
+  height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  box-sizing: border-box;
+  line-height: 1;
+  user-select: none;
+}
+
+.formatSelect {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  height: 28px;
+  padding: 0 10px;
   font-size: 12px;
   cursor: pointer;
   line-height: 1;
   user-select: none;
+  box-sizing: border-box;
+}
+
+.formatSelect:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  outline-offset: 2px;
+}
+
+.downloadButton {
+  white-space: nowrap;
 }
 
 .copyButton:hover {
@@ -180,7 +233,7 @@ body {
 
 textarea {
   width: 100%;
-  height: 70vh;
+  height: 100%;
   resize: none;
   border: 0;
   outline: none;
@@ -199,6 +252,7 @@ textarea {
 
 .codeEditor {
   position: relative;
+  height: calc(var(--codeAreaH) - var(--panelFooterH));
 }
 
 .highlightLayer {
@@ -223,7 +277,7 @@ textarea {
   position: relative;
   z-index: 1;
   /* keep textarea dimensions consistent with old textarea styling */
-  height: 70vh;
+  height: 100%;
   width: 100%;
   background: transparent;
   border: 0;
@@ -252,7 +306,7 @@ textarea {
 
 .codeArea {
   width: 100%;
-  height: 70vh;
+  height: calc(var(--codeAreaH) - var(--panelFooterH));
   overflow: auto;
   margin: 0;
   padding: 12px;
@@ -347,8 +401,8 @@ textarea {
   .grid {
     grid-template-columns: 1fr;
   }
-  textarea {
-    height: 45vh;
+  :root {
+    --codeAreaH: 45vh;
   }
 }
 

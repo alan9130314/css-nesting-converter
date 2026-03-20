@@ -27,11 +27,29 @@ const seed = `.parent {
   }
 }`
 
+function minifyCss(css: string): string {
+  // Intentionally simple/minimal: it removes whitespace around structural tokens.
+  // It doesn't try to fully parse values (e.g. url()/calc() edge cases), but works
+  // well for the CSS this converter emits.
+  let s = css.trim()
+  s = s.replace(/[\r\n\t]+/g, '')
+  s = s.replace(/\s+/g, ' ')
+  s = s.replace(/\s*\{\s*/g, '{')
+  s = s.replace(/\s*\}\s*/g, '}')
+  s = s.replace(/\s*;\s*/g, ';')
+  s = s.replace(/\s*,\s*/g, ',')
+  s = s.replace(/\s*:\s*/g, ':')
+  s = s.replace(/;}/g, '}')
+  return s.trim()
+}
+
 export default function App() {
   const [input, setInput] = useState(seed)
   const [output, setOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  type OutputFormat = 'pretty' | 'minified'
+  const [format, setFormat] = useState<OutputFormat>('pretty')
 
   const [locale, setLocale] = useState<Locale>(() => getInitialLocale())
 
@@ -71,8 +89,17 @@ export default function App() {
   }, [input, convert])
 
   const displayOutput = error
-    ? `// ${t(locale, 'app.error.outputMain')}\n// ${error}\n`
-    : output
+    ? `// ${t(locale, 'app.error.outputMain')}\n// ${error}\n// ${t(locale, 'app.error.syntaxHint')}\n`
+    : format === 'minified'
+      ? minifyCss(output)
+      : output
+
+  const downloadText = error ? '' : format === 'minified' ? minifyCss(output) : output
+
+  useEffect(() => {
+    // Reset "copied" state whenever the displayed output changes.
+    setCopied(false)
+  }, [displayOutput])
 
   const canCopy = displayOutput.trim().length > 0
 
@@ -104,6 +131,21 @@ export default function App() {
     } catch {
       // No-op: copying failed (permissions/unsupported browser).
     }
+  }
+
+  const canDownload = downloadText.trim().length > 0
+
+  const handleDownload = () => {
+    if (!canDownload) return
+    const blob = new Blob([downloadText], { type: 'text/css;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'plain.css'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   const highlightedOutput = useMemo(() => {
@@ -180,6 +222,7 @@ export default function App() {
               wrap="off"
             />
           </div>
+          <div className="panelFooter" aria-hidden="true" />
         </section>
 
         <section className="panel">
@@ -187,15 +230,6 @@ export default function App() {
             <strong>{t(locale, 'panel.output.header')}</strong>
             <div className="panelHeaderRight">
               <span>{t(locale, 'panel.output.subheader')}</span>
-              <button
-                type="button"
-                className="copyButton"
-                onClick={handleCopy}
-                disabled={!canCopy}
-                aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
-              >
-                {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
-              </button>
             </div>
           </div>
           <pre className="codeArea">
@@ -209,6 +243,35 @@ export default function App() {
               <span className="codePlaceholder">{t(locale, 'app.codePlaceholder')}</span>
             )}
           </pre>
+          <div className="panelFooter">
+            <select
+              className="formatSelect"
+              value={format}
+              onChange={(e) => setFormat(e.target.value as OutputFormat)}
+              aria-label={t(locale, 'panel.output.formatSelectAriaLabel')}
+            >
+              <option value="pretty">{t(locale, 'panel.output.format.pretty')}</option>
+              <option value="minified">{t(locale, 'panel.output.format.minified')}</option>
+            </select>
+            <button
+              type="button"
+              className="copyButton"
+              onClick={handleCopy}
+              disabled={!canCopy}
+              aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
+            >
+              {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
+            </button>
+            <button
+              type="button"
+              className="copyButton downloadButton"
+              onClick={handleDownload}
+              disabled={!canDownload}
+              aria-label={t(locale, 'panel.output.downloadButtonAriaLabel')}
+            >
+              {t(locale, 'panel.output.downloadButtonLabel')}
+            </button>
+          </div>
         </section>
       </div>
     </div>

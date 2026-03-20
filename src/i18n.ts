@@ -13,6 +13,7 @@ export const MESSAGES = {
     'app.status.conversionErrorPrefix': '轉換錯誤：',
     'app.codePlaceholder': '等待轉換…',
     'app.error.outputMain': '轉換失敗：',
+    'app.error.syntaxHint': '提示：請檢查大括號 `{}` 是否配對，並確認每個巢狀區塊的 selector / `@rule` 前綴是完整的。',
 
     'panel.nesting.header': 'Nesting CSS',
     'panel.nesting.subheader': 'input',
@@ -21,6 +22,11 @@ export const MESSAGES = {
     'panel.output.copyButtonLabel': '複製',
     'panel.output.copyCopiedLabel': '已複製',
     'panel.output.copyButtonAriaLabel': '複製轉換結果到剪貼簿',
+    'panel.output.formatSelectAriaLabel': '格式選擇',
+    'panel.output.format.pretty': '美化',
+    'panel.output.format.minified': '壓縮',
+    'panel.output.downloadButtonLabel': '下載 .css',
+    'panel.output.downloadButtonAriaLabel': '下載轉換輸出（plain CSS）',
 
     'app.theme.toggleAriaLabel': '切換主題',
     'theme.switchToLightLabel': '亮色',
@@ -38,6 +44,7 @@ export const MESSAGES = {
     'app.status.conversionErrorPrefix': 'Conversion error: ',
     'app.codePlaceholder': 'Waiting for conversion…',
     'app.error.outputMain': 'Conversion failed:',
+    'app.error.syntaxHint': 'Hint: please check that braces `{}` are balanced and each nested block has a complete selector / `@rule` before the `{`.',
 
     'panel.nesting.header': 'Nesting CSS',
     'panel.nesting.subheader': 'input',
@@ -46,6 +53,11 @@ export const MESSAGES = {
     'panel.output.copyButtonLabel': 'Copy',
     'panel.output.copyCopiedLabel': 'Copied',
     'panel.output.copyButtonAriaLabel': 'Copy converted result to clipboard',
+    'panel.output.formatSelectAriaLabel': 'Format selector',
+    'panel.output.format.pretty': 'Pretty',
+    'panel.output.format.minified': 'Minified',
+    'panel.output.downloadButtonLabel': 'Download .css',
+    'panel.output.downloadButtonAriaLabel': 'Download plain CSS output',
 
     'app.theme.toggleAriaLabel': 'Toggle theme',
     'theme.switchToLightLabel': 'Light',
