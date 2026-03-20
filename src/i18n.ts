@@ -25,8 +25,8 @@ export const MESSAGES = {
     'panel.output.formatSelectAriaLabel': '格式選擇',
     'panel.output.format.pretty': '美化',
     'panel.output.format.minified': '壓縮',
-    'panel.output.downloadButtonLabel': '下載 .css',
-    'panel.output.downloadButtonAriaLabel': '下載轉換輸出（plain CSS）',
+    'panel.output.downloadButtonLabel': '下載檔案',
+    'panel.output.downloadButtonAriaLabel': '下載轉換輸出（plain CSS 檔案）',
 
     'app.theme.toggleAriaLabel': '切換主題',
     'theme.switchToLightLabel': '亮色',
@@ -56,8 +56,8 @@ export const MESSAGES = {
     'panel.output.formatSelectAriaLabel': 'Format selector',
     'panel.output.format.pretty': 'Pretty',
     'panel.output.format.minified': 'Minified',
-    'panel.output.downloadButtonLabel': 'Download .css',
-    'panel.output.downloadButtonAriaLabel': 'Download plain CSS output',
+    'panel.output.downloadButtonLabel': 'Download file',
+    'panel.output.downloadButtonAriaLabel': 'Download plain CSS output file',
 
     'app.theme.toggleAriaLabel': 'Toggle theme',
     'theme.switchToLightLabel': 'Light',
