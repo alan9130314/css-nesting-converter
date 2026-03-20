@@ -18,6 +18,9 @@ export const MESSAGES = {
     'panel.nesting.subheader': 'input',
     'panel.output.header': 'Plain CSS',
     'panel.output.subheader': 'output',
+    'panel.output.copyButtonLabel': '複製',
+    'panel.output.copyCopiedLabel': '已複製',
+    'panel.output.copyButtonAriaLabel': '複製轉換結果到剪貼簿',
 
     'app.theme.toggleAriaLabel': '切換主題',
     'theme.switchToLightLabel': '亮色',
@@ -40,6 +43,9 @@ export const MESSAGES = {
     'panel.nesting.subheader': 'input',
     'panel.output.header': 'Plain CSS',
     'panel.output.subheader': 'output',
+    'panel.output.copyButtonLabel': 'Copy',
+    'panel.output.copyCopiedLabel': 'Copied',
+    'panel.output.copyButtonAriaLabel': 'Copy converted result to clipboard',
 
     'app.theme.toggleAriaLabel': 'Toggle theme',
     'theme.switchToLightLabel': 'Light',

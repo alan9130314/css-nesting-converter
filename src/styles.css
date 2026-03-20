@@ -131,6 +131,39 @@ body {
   user-select: none;
 }
 
+.panelHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copyButton {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  /* keep panel header height consistent with the left panel */
+  padding: 2px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+  user-select: none;
+}
+
+.copyButton:hover {
+  background: var(--toggleHoverBg);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  outline-offset: 2px;
+}
+
+.copyButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .langSelect:focus-visible {
   outline: 2px solid rgba(99, 102, 241, 0.45);
   outline-offset: 2px;

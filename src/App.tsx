@@ -31,6 +31,7 @@ export default function App() {
   const [input, setInput] = useState(seed)
   const [output, setOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const [locale, setLocale] = useState<Locale>(() => getInitialLocale())
 
@@ -72,6 +73,38 @@ export default function App() {
   const displayOutput = error
     ? `// ${t(locale, 'app.error.outputMain')}\n// ${error}\n`
     : output
+
+  const canCopy = displayOutput.trim().length > 0
+
+  async function copyTextToClipboard(text: string) {
+    // Prefer modern clipboard API, fallback for older browsers.
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return
+    }
+
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.top = '-1000px'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+  }
+
+  const handleCopy = async () => {
+    if (!canCopy) return
+    try {
+      await copyTextToClipboard(displayOutput)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // No-op: copying failed (permissions/unsupported browser).
+    }
+  }
 
   const highlightedOutput = useMemo(() => {
     // Prism expects a raw string; it returns HTML with <span class="token ...">...
@@ -152,7 +185,18 @@ export default function App() {
         <section className="panel">
           <div className="panelHeader">
             <strong>{t(locale, 'panel.output.header')}</strong>
-            <span>{t(locale, 'panel.output.subheader')}</span>
+            <div className="panelHeaderRight">
+              <span>{t(locale, 'panel.output.subheader')}</span>
+              <button
+                type="button"
+                className="copyButton"
+                onClick={handleCopy}
+                disabled={!canCopy}
+                aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
+              >
+                {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
+              </button>
+            </div>
           </div>
           <pre className="codeArea">
             {displayOutput ? (
