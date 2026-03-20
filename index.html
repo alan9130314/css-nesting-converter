@@ -4,8 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSS Nesting 轉 Plain CSS</title>
+    <meta
+      name="description"
+      content="把 CSS nesting 寫法展開成一般（平面）CSS，並即時預覽轉換結果。支援巢狀 selector、&、selector list、@media。"
+    />
+    <link rel="canonical" href="https://alan9130314.github.io/css-nesting-converter/" />
+
+    <meta property="og:title" content="CSS Nesting 轉 Plain CSS" />
+    <meta
+      property="og:description"
+      content="把 CSS nesting 寫法展開成一般（平面）CSS，並即時預覽轉換結果。支援巢狀 selector、&、selector list、@media。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://alan9130314.github.io/css-nesting-converter/" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="CSS Nesting 轉 Plain CSS" />
+    <meta
+      name="twitter:description"
+      content="把 CSS nesting 寫法展開成一般（平面）CSS，並即時預覽轉換結果。支援巢狀 selector、&、selector list、@media。"
+    />
   </head>
   <body>
+    <main>
+      <h1>CSS Nesting 轉換器</h1>
+      <p>把 CSS nesting 寫法展開成一般（平面）CSS，並即時預覽轉換結果。</p>
+      <p>支援：巢狀 selector、`&`、selector list、`@media`。</p>
+      <noscript>需要啟用 JavaScript 才能使用完整轉換功能。</noscript>
+    </main>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
