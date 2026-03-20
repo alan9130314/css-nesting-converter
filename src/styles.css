@@ -406,3 +406,122 @@ textarea {
   }
 }
 
+@media (max-width: 520px) {
+  .app {
+    padding: 12px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .rightBar {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .hint {
+    font-size: 12px;
+  }
+
+  .title {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  .grid {
+    gap: 10px;
+  }
+
+  .panelHeader {
+    height: var(--panelHeaderH);
+    padding: 0 10px;
+  }
+
+  .panelHeader strong {
+    font-size: 12px;
+  }
+
+  .panelHeader span {
+    font-size: 11px;
+  }
+
+  :root {
+    --panelHeaderH: 36px;
+    /* Make room for footer controls to wrap without being cut off by `.panel { overflow: hidden; }` */
+    --panelFooterH: 64px;
+    --codeAreaH: 40vh;
+  }
+
+  .panelFooter {
+    height: var(--panelFooterH);
+    padding: 8px 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: center;
+    gap: 8px;
+  }
+
+  /* On narrow screens, allow the download label to wrap instead of overflowing. */
+  .downloadButton {
+    white-space: normal;
+    height: 28px;
+  }
+
+  textarea {
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .highlightLayer {
+    padding: 10px;
+  }
+
+  .highlightLayer code {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .inputLayer {
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .codeArea {
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --codeAreaH: 36vh;
+    --panelFooterH: 58px;
+    --panelHeaderH: 34px;
+  }
+
+  .panelFooter {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .themeToggle,
+  .langSelect {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+
+  .copyButton,
+  .formatSelect {
+    font-size: 11px;
+    padding: 0 9px;
+  }
+}
+

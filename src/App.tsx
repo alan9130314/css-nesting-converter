@@ -255,15 +255,6 @@ export default function App() {
             </select>
             <button
               type="button"
-              className="copyButton"
-              onClick={handleCopy}
-              disabled={!canCopy}
-              aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
-            >
-              {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
-            </button>
-            <button
-              type="button"
               className="copyButton downloadButton"
               onClick={handleDownload}
               disabled={!canDownload}
@@ -271,6 +262,16 @@ export default function App() {
             >
               {t(locale, 'panel.output.downloadButtonLabel')}
             </button>
+            <button
+              type="button"
+              className="copyButton"
+              onClick={handleCopy}
+              disabled={!canCopy}
+              aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
+            >
+              {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
+            </button>
+
           </div>
         </section>
       </div>
