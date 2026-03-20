@@ -1,10 +1,35 @@
 :root {
+  /* Light theme (default) */
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --border: rgba(15, 23, 42, 0.12);
+  --text: rgba(15, 23, 42, 0.92);
+  --muted: rgba(15, 23, 42, 0.62);
+  --glow1: rgba(99, 102, 241, 0.18);
+  --glow2: rgba(16, 185, 129, 0.14);
+
+  --panelBg: linear-gradient(180deg, rgba(15, 23, 42, 0.04), transparent);
+  --panelHeaderBg: rgba(15, 23, 42, 0.02);
+
+  --toggleHoverBg: rgba(99, 102, 241, 0.12);
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.theme-dark {
+  /* Dark theme (previous default) */
   --bg: #0b1020;
   --panel: #121a33;
   --border: rgba(255, 255, 255, 0.12);
   --text: rgba(255, 255, 255, 0.92);
   --muted: rgba(255, 255, 255, 0.65);
-  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --glow1: rgba(99, 102, 241, 0.25);
+  --glow2: rgba(16, 185, 129, 0.2);
+
+  --panelBg: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+  --panelHeaderBg: rgba(255, 255, 255, 0.03);
+
+  --toggleHoverBg: rgba(99, 102, 241, 0.22);
 }
 
 html,
@@ -15,8 +40,8 @@ body {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
-  background: radial-gradient(1200px 700px at 20% 10%, rgba(99, 102, 241, 0.25), transparent),
-    radial-gradient(900px 600px at 80% 0%, rgba(16, 185, 129, 0.2), transparent),
+  background: radial-gradient(1200px 700px at 20% 10%, var(--glow1), transparent),
+    radial-gradient(900px 600px at 80% 0%, var(--glow2), transparent),
     var(--bg);
   color: var(--text);
 }
@@ -33,6 +58,12 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.rightBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .title {
@@ -52,7 +83,7 @@ body {
 }
 
 .panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+  background: var(--panelBg);
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
@@ -64,7 +95,7 @@ body {
   justify-content: space-between;
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--panelHeaderBg);
 }
 
 .panelHeader strong {
@@ -74,6 +105,27 @@ body {
 .panelHeader span {
   font-size: 12px;
   color: var(--muted);
+}
+
+.themeToggle {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+  user-select: none;
+}
+
+.themeToggle:hover {
+  background: var(--toggleHoverBg);
+}
+
+.themeToggle:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  outline-offset: 2px;
 }
 
 textarea {
@@ -169,36 +221,74 @@ textarea {
 }
 
 .codePlaceholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(15, 23, 42, 0.35);
 }
 
-/* Minimal Prism theme for dark background */
+/* Prism token colors
+   - Default: light theme (better contrast on white-ish background)
+   - Dark theme: overridden under `.theme-dark` */
 .token.comment {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(51, 65, 85, 0.8);
   font-style: italic;
 }
 .token.selector {
-  color: #a6e22e;
+  color: #0f766e;
+  font-weight: 600;
 }
 .token.property {
-  color: #7dd3fc;
+  color: #0284c7;
+  font-weight: 600;
 }
 .token.atrule {
-  color: #fbbf24;
+  color: #b45309;
 }
 .token.punctuation {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(15, 23, 42, 0.55);
 }
 .token.string {
-  color: #34d399;
+  color: #059669;
 }
 .token.function {
-  color: #60a5fa;
+  color: #2563eb;
 }
 .token.number {
-  color: #f472b6;
+  color: #db2777;
 }
 .token.important {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.theme-dark .codePlaceholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.theme-dark .token.comment {
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
+.theme-dark .token.selector {
+  color: #a6e22e;
+}
+.theme-dark .token.property {
+  color: #7dd3fc;
+}
+.theme-dark .token.atrule {
+  color: #fbbf24;
+}
+.theme-dark .token.punctuation {
+  color: rgba(255, 255, 255, 0.7);
+}
+.theme-dark .token.string {
+  color: #34d399;
+}
+.theme-dark .token.function {
+  color: #60a5fa;
+}
+.theme-dark .token.number {
+  color: #f472b6;
+}
+.theme-dark .token.important {
   color: #f87171;
   font-weight: 700;
 }

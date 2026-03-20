@@ -31,6 +31,19 @@ export default function App() {
   const [output, setOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
 
+  type Theme = 'light' | 'dark'
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'light'
+    const saved = window.localStorage.getItem('theme')
+    return saved === 'dark' ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    document.documentElement.classList.toggle('theme-dark', theme === 'dark')
+    window.localStorage.setItem('theme', theme)
+  }, [theme])
+
   const convert = useMemo(() => convertNestToCss, [])
   const inputTextAreaRef = useRef<HTMLTextAreaElement | null>(null)
   const inputHighlightRef = useRef<HTMLPreElement | null>(null)
@@ -68,7 +81,17 @@ export default function App() {
           <div className="title">CSS Nesting 轉換器</div>
           <div className="hint">左邊貼 nesting CSS，右邊自動顯示轉換後結果（盡量涵蓋常見 nesting 寫法）</div>
         </div>
-        <div className="hint">{error ? `轉換錯誤：${error}` : '即時轉換中…'}</div>
+        <div className="rightBar">
+          <div className="hint">{error ? `轉換錯誤：${error}` : '即時轉換中…'}</div>
+          <button
+            type="button"
+            className="themeToggle"
+            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+            aria-label="切換主題"
+          >
+            {theme === 'dark' ? '亮色' : '暗色'}
+          </button>
+        </div>
       </div>
 
       <div className="grid">
