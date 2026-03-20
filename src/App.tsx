@@ -50,6 +50,7 @@ export default function App() {
   const [copied, setCopied] = useState(false)
   type OutputFormat = 'pretty' | 'minified'
   const [format, setFormat] = useState<OutputFormat>('pretty')
+  const [preserveComments, setPreserveComments] = useState(true)
 
   const [locale, setLocale] = useState<Locale>(() => getInitialLocale())
 
@@ -74,19 +75,20 @@ export default function App() {
   const convert = useMemo(() => convertNestToCss, [])
   const inputTextAreaRef = useRef<HTMLTextAreaElement | null>(null)
   const inputHighlightRef = useRef<HTMLPreElement | null>(null)
+  const outputHighlightRef = useRef<HTMLPreElement | null>(null)
 
   useEffect(() => {
     const t = window.setTimeout(() => {
       try {
         setError(null)
-        setOutput(convert(input))
+        setOutput(convert(input, { preserveComments }))
       } catch (e) {
         setOutput('')
         setError(e instanceof Error ? e.message : String(e))
       }
     }, 200)
     return () => window.clearTimeout(t)
-  }, [input, convert])
+  }, [input, convert, preserveComments])
 
   const displayOutput = error
     ? `// ${t(locale, 'app.error.outputMain')}\n// ${error}\n// ${t(locale, 'app.error.syntaxHint')}\n`
@@ -148,14 +150,13 @@ export default function App() {
     URL.revokeObjectURL(url)
   }
 
-  const highlightedOutput = useMemo(() => {
-    // Prism expects a raw string; it returns HTML with <span class="token ...">...
-    return Prism.highlight(displayOutput, Prism.languages[CSS_LANGUAGE], CSS_LANGUAGE)
-  }, [displayOutput])
-
   const highlightedInput = useMemo(() => {
     return Prism.highlight(input || '', Prism.languages[CSS_LANGUAGE], CSS_LANGUAGE)
   }, [input])
+
+  const highlightedOutput = useMemo(() => {
+    return Prism.highlight(displayOutput, Prism.languages[CSS_LANGUAGE], CSS_LANGUAGE)
+  }, [displayOutput])
 
   return (
     <div className="app">
@@ -228,23 +229,52 @@ export default function App() {
         <section className="panel">
           <div className="panelHeader">
             <strong>{t(locale, 'panel.output.header')}</strong>
-            <div className="panelHeaderRight">
+              <div className="panelHeaderRight">
               <span>{t(locale, 'panel.output.subheader')}</span>
             </div>
           </div>
-          <pre className="codeArea">
-            {displayOutput ? (
-              <code
-                className="language-css"
-                // Prism generates safe escaped HTML.
-                dangerouslySetInnerHTML={{ __html: highlightedOutput }}
+          {displayOutput ? (
+            <div className="codeEditor outputCodeEditor">
+              <pre
+                className="highlightLayer"
+                ref={outputHighlightRef}
+                aria-hidden="true"
+              >
+                <code
+                  className="language-css"
+                  dangerouslySetInnerHTML={{ __html: highlightedOutput }}
+                />
+              </pre>
+              <textarea
+                value={displayOutput}
+                readOnly
+                spellCheck={false}
+                wrap="off"
+                className="inputLayer outputTextArea"
+                onScroll={(e) => {
+                  const t = e.currentTarget
+                  if (!outputHighlightRef.current) return
+                  outputHighlightRef.current.scrollTop = t.scrollTop
+                  outputHighlightRef.current.scrollLeft = t.scrollLeft
+                }}
               />
-            ) : (
+            </div>
+          ) : (
+            <div className="codeArea">
               <span className="codePlaceholder">{t(locale, 'app.codePlaceholder')}</span>
-            )}
-          </pre>
+            </div>
+          )}
           <div className="panelFooter">
             <div className="panelFooterLeft">
+              <select
+                className="formatSelect"
+                value={preserveComments ? 'preserve' : 'remove'}
+                onChange={(e) => setPreserveComments(e.target.value === 'preserve')}
+                aria-label={t(locale, 'panel.output.commentsSelectAriaLabel')}
+              >
+                <option value="preserve">{t(locale, 'panel.output.comments.preserve')}</option>
+                <option value="remove">{t(locale, 'panel.output.comments.remove')}</option>
+              </select>
               <select
                 className="formatSelect"
                 value={format}

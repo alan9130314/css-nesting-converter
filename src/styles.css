@@ -338,6 +338,14 @@ textarea {
   font-size: inherit;
 }
 
+.outputTextArea::placeholder {
+  color: rgba(15, 23, 42, 0.35);
+}
+
+.theme-dark .outputTextArea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .codePlaceholder {
   color: rgba(15, 23, 42, 0.35);
 }
