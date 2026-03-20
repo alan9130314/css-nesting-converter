@@ -244,34 +244,37 @@ export default function App() {
             )}
           </pre>
           <div className="panelFooter">
-            <select
-              className="formatSelect"
-              value={format}
-              onChange={(e) => setFormat(e.target.value as OutputFormat)}
-              aria-label={t(locale, 'panel.output.formatSelectAriaLabel')}
-            >
-              <option value="pretty">{t(locale, 'panel.output.format.pretty')}</option>
-              <option value="minified">{t(locale, 'panel.output.format.minified')}</option>
-            </select>
-            <button
-              type="button"
-              className="copyButton downloadButton"
-              onClick={handleDownload}
-              disabled={!canDownload}
-              aria-label={t(locale, 'panel.output.downloadButtonAriaLabel')}
-            >
-              {t(locale, 'panel.output.downloadButtonLabel')}
-            </button>
-            <button
-              type="button"
-              className="copyButton"
-              onClick={handleCopy}
-              disabled={!canCopy}
-              aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
-            >
-              {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
-            </button>
-
+            <div className="panelFooterLeft">
+              <select
+                className="formatSelect"
+                value={format}
+                onChange={(e) => setFormat(e.target.value as OutputFormat)}
+                aria-label={t(locale, 'panel.output.formatSelectAriaLabel')}
+              >
+                <option value="pretty">{t(locale, 'panel.output.format.pretty')}</option>
+                <option value="minified">{t(locale, 'panel.output.format.minified')}</option>
+              </select>
+            </div>
+            <div className="panelFooterRight">
+              <button
+                type="button"
+                className="copyButton downloadButton"
+                onClick={handleDownload}
+                disabled={!canDownload}
+                aria-label={t(locale, 'panel.output.downloadButtonAriaLabel')}
+              >
+                {t(locale, 'panel.output.downloadButtonLabel')}
+              </button>
+              <button
+                type="button"
+                className="copyButton"
+                onClick={handleCopy}
+                disabled={!canCopy}
+                aria-label={t(locale, 'panel.output.copyButtonAriaLabel')}
+              >
+                {copied ? t(locale, 'panel.output.copyCopiedLabel') : t(locale, 'panel.output.copyButtonLabel')}
+              </button>
+            </div>
           </div>
         </section>
       </div>
