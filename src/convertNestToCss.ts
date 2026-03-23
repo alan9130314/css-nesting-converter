@@ -193,14 +193,28 @@ function makeIndent(level: number) {
   return '  '.repeat(Math.max(0, level))
 }
 
+/** Opening `{` is followed by a newline in normal formatting; that first `\n` is not an
+ * extra blank line inside the declaration block. */
+function trimDeclSegmentEdges(s: string): string {
+  return s.replace(/^\r?\n/, '')
+}
+
 function formatDecls(decls: string, indentLevel: number) {
   const indent = makeIndent(indentLevel)
-  return decls
-    .split('\n')
+  const endsWithNewline = decls.endsWith('\n')
+  const lines = decls.split('\n')
+  // `split('\n')` adds a spurious trailing '' when `decls` ends with `\n`; drop only that.
+  if (endsWithNewline && lines.length && lines[lines.length - 1] === '') {
+    lines.pop()
+  }
+  return lines
     .map((line) => {
       const t = line.trim()
-      return t ? `${indent}${t}` : ''
+      if (t) return `${indent}${t}`
+      if (line === '') return '' // intentional blank line in source
+      return null // whitespace-only line (e.g. indent before nested rule)
     })
+    .filter((x): x is string => x !== null)
     .join('\n')
 }
 
@@ -316,9 +330,9 @@ function parseNestingCss(input: string, options: { preserveComments: boolean }):
       const { header, headerTrailing } = extractHeaderCoreAndTrailing(headerWithPlaceholders, options.preserveComments)
       // Declarations for this block end right before the next nested selector header starts.
       // `headerStartByDepth[depth]` is updated after `;` (declaration boundary) and after `}` (child boundary).
-      const declSegment = css.slice(segmentStartByDepth[depth], headerStart).trim()
+      const declSegment = trimDeclSegmentEdges(css.slice(segmentStartByDepth[depth], headerStart))
 
-      if (declSegment) {
+      if (declSegment.trim()) {
         const parent = stack[depth]
         if (parent.kind !== 'root') parent.declarations.push(declSegment)
       }
@@ -357,8 +371,8 @@ function parseNestingCss(input: string, options: { preserveComments: boolean }):
         throw new Error('Unexpected "}" (parse stack underflow)')
       }
 
-      const declSegment = css.slice(segmentStartByDepth[depth], i).trim()
-      if (declSegment) node.declarations.push(declSegment)
+      const declSegment = trimDeclSegmentEdges(css.slice(segmentStartByDepth[depth], i))
+      if (declSegment.trim()) node.declarations.push(declSegment)
       stack.pop()
       depth = depth - 1
       segmentStartByDepth[depth] = i + 1
@@ -408,12 +422,12 @@ function emitCss(node: CssNode, parentSelectors: string[], indentLevel: number):
 
   if (node.kind === 'rule') {
     const fullSelectors = expandSelectors(parentSelectors, node.header)
-    const decls = node.declarations.join('\n').trim()
+    const declsRaw = node.declarations.join('\n')
 
     let out = ''
-    if (decls) {
+    if (declsRaw.trim()) {
       const betweenSelectorAndBrace = node.headerTrailing ? '' : ' '
-      out += `${indent}${fullSelectors.join(', ')}${node.headerTrailing}${betweenSelectorAndBrace}{\n${formatDecls(decls, indentLevel + 1)}\n${indent}}\n`
+      out += `${indent}${fullSelectors.join(', ')}${node.headerTrailing}${betweenSelectorAndBrace}{\n${formatDecls(declsRaw, indentLevel + 1)}\n${indent}}\n`
     }
 
     for (const child of node.children) {
@@ -424,16 +438,16 @@ function emitCss(node: CssNode, parentSelectors: string[], indentLevel: number):
   }
 
   // atrule
-  const decls = node.declarations.join('\n').trim()
+  const declsRaw = node.declarations.join('\n')
   const wrapParent = !isRootParent(parentSelectors)
   let inner = ''
 
-  if (decls) {
+  if (declsRaw.trim()) {
     if (wrapParent) {
       const innerIndent = makeIndent(indentLevel + 1)
-      inner += `${innerIndent}${parentSelectors.join(', ')} {\n${formatDecls(decls, indentLevel + 2)}\n${innerIndent}}\n`
+      inner += `${innerIndent}${parentSelectors.join(', ')} {\n${formatDecls(declsRaw, indentLevel + 2)}\n${innerIndent}}\n`
     } else {
-      inner += `${formatDecls(decls, indentLevel + 1)}\n`
+      inner += `${formatDecls(declsRaw, indentLevel + 1)}\n`
     }
   }
 

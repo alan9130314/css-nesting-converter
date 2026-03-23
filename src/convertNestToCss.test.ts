@@ -118,5 +118,17 @@ describe('convertNestToCss', () => {
     expect(out).toContain(`@media (min-width: 600px) /* mq */ {`)
     expect(out).toContain(`  .a {\n    color: red;\n  }\n`)
   })
+
+  it('pretty 輸出保留宣告區塊內刻意空行', () => {
+    const input = `.a {
+  color: red;
+
+
+  padding: 0;
+  .b { color: blue; }
+}`
+    const out = convertNestToCss(input)
+    expect(out).toContain('  color: red;\n\n\n  padding: 0;')
+  })
 })
 

@@ -6,8 +6,7 @@ import { LOCALE_STORAGE_KEY, getInitialLocale, t, type Locale } from './i18n'
 
 const CSS_LANGUAGE = 'css' as const
 
-const seed = `
-/* CSS Nesting Converter */
+const seed = `/* CSS Nesting Converter */
 .parent {
   color: red;
   /* This is a comment */
