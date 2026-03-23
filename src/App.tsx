@@ -6,22 +6,26 @@ import { LOCALE_STORAGE_KEY, getInitialLocale, t, type Locale } from './i18n'
 
 const CSS_LANGUAGE = 'css' as const
 
-const seed = `.parent {
+const seed = `
+/* CSS Nesting Converter */
+.parent {
   color: red;
-
+  /* This is a comment */
   .child {
     color: blue;
   }
-
+  /* This is another comment */
   &:hover {
     color: green;
   }
 }
-
+/* Media Query */
 @media (min-width: 600px) {
+  /* Media Query Content */
   .card {
     padding: 12px;
     .title {
+      /* Title Content */
       font-weight: 700;
     }
   }
